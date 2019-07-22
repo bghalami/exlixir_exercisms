@@ -21,12 +21,12 @@ defmodule RNATranscription do
 
   def to_rna(dna) do
     map = %{
-      "G" => 67,
-      "C" => 71,
-      "T" => 65,
-      "A" => 85
+      ?G => ?C,
+      ?C => ?G,
+      ?T => ?A,
+      ?A => ?U
     }
     dna
-    |> Enum.map(fn el -> map[<<el>>] end)
+    |> Enum.map(&(map[&1]))
   end
 end
