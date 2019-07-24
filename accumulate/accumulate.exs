@@ -16,6 +16,12 @@ defmodule Accumulate do
   """
 
   @spec accumulate(list, (any -> any)) :: list
+  def accumulate(list, _fun) when list == [] do
+    list
+  end
+
   def accumulate(list, fun) do
+    list
+    |> Enum.map(fun)
   end
 end
