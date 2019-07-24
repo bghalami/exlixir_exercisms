@@ -6,7 +6,13 @@ defmodule Strain do
   Do not use `Enum.filter`.
   """
   @spec keep(list :: list(any), fun :: (any -> boolean)) :: list(any)
+  def keep(list, fun) when list == [] do
+    []
+  end
   def keep(list, fun) do
+    map = list
+          |> Enum.group_by(fun)
+    map[true]
   end
 
   @doc """
@@ -16,6 +22,12 @@ defmodule Strain do
   Do not use `Enum.reject`.
   """
   @spec discard(list :: list(any), fun :: (any -> boolean)) :: list(any)
+  def discard(list, fun) when list == [] do
+    list
+  end
   def discard(list, fun) do
+    map = list
+          |> Enum.group_by(fun)
+    map[false]
   end
 end
