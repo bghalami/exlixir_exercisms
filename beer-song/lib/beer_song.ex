@@ -34,12 +34,12 @@ defmodule BeerSong do
   @spec lyrics(Range.t()) :: String.t()
   def lyrics(range \\ 99..0) do
     range
-    |> Enum.reduce("", fn bottles, acc ->
+    |> Enum.map_join(fn bottles ->
                           case bottles do
                             0 ->
-                              acc <> verse(bottles)
+                              verse(bottles)
                             _ ->
-                              acc <> verse(bottles) <> "\n"
+                              verse(bottles) <> "\n"
                           end
                        end)
   end
