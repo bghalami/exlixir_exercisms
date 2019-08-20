@@ -1,4 +1,6 @@
 defmodule RobotSimulator do
+  defguard is_position(x,y) when is_integer(x) and is_integer(y)
+
 
   @doc """
   Create a Robot Simulator given an initial direction and position.
@@ -17,13 +19,13 @@ defmodule RobotSimulator do
     end
   end
 
-  defp direction_valid?(:north), do: true
-  defp direction_valid?(:south), do: true
-  defp direction_valid?(:east), do: true
-  defp direction_valid?(:west), do: true
-  defp direction_valid?(_), do: false
+  defp direction_valid?(:north),  do: true
+  defp direction_valid?(:south),  do: true
+  defp direction_valid?(:east),   do: true
+  defp direction_valid?(:west),   do: true
+  defp direction_valid?(_invalid), do: false
 
-  defp position_valid?({x,y}) when is_number(x) and is_number(y), do: true
+  defp position_valid?({x,y}) when is_position(x,y), do: true
   defp position_valid?(_position), do: false
 
 
@@ -50,18 +52,18 @@ defmodule RobotSimulator do
     |> Enum.all?( &(&1 == "A" || &1 == "L" || &1 == "R") )
   end
 
-  defp move_robot( %{ direction: :north, position: {x,y} }, "L"), do: %{direction: :west, position: {x,y} }
-  defp move_robot( %{ direction: :north, position: {x,y} }, "R"), do: %{direction: :east, position: {x,y} }
-  defp move_robot( %{ direction: :north, position: {x,y} }, "A"), do: %{direction: :north, position: {x,y + 1} }
-  defp move_robot( %{ direction: :east, position: {x,y} }, "L"), do: %{direction: :north, position: {x,y} }
-  defp move_robot( %{ direction: :east, position: {x,y} }, "R"), do: %{direction: :south, position: {x,y} }
-  defp move_robot( %{ direction: :east, position: {x,y} }, "A"), do: %{direction: :east, position: {x + 1,y} }
-  defp move_robot( %{ direction: :south, position: {x,y} }, "L"), do: %{direction: :east, position: {x,y} }
-  defp move_robot( %{ direction: :south, position: {x,y} }, "R"), do: %{direction: :west, position: {x,y} }
-  defp move_robot( %{ direction: :south, position: {x,y} }, "A"), do: %{direction: :south, position: {x,y - 1} }
-  defp move_robot( %{ direction: :west, position: {x,y} }, "L"), do: %{direction: :south, position: {x,y} }
-  defp move_robot( %{ direction: :west, position: {x,y} }, "R"), do: %{direction: :north, position: {x,y} }
-  defp move_robot( %{ direction: :west, position: {x,y} }, "A"), do: %{direction: :west, position: {x - 1,y} }
+  defp move_robot( robot = %{ direction: :north }, "L"), do: %{ robot | direction: :west }
+  defp move_robot( robot = %{ direction: :north }, "R"), do: %{ robot | direction: :east }
+  defp move_robot( robot = %{ direction: :north, position: {x,y} }, "A"), do: %{ robot | position: {x,y + 1} }
+  defp move_robot( robot = %{ direction: :east }, "L"), do: %{ robot | direction: :north }
+  defp move_robot( robot = %{ direction: :east }, "R"), do: %{ robot | direction: :south }
+  defp move_robot( robot = %{ direction: :east,  position: {x,y} }, "A"), do: %{ robot | position: {x + 1,y} }
+  defp move_robot( robot = %{ direction: :south }, "L"), do: %{ robot | direction: :east }
+  defp move_robot( robot = %{ direction: :south }, "R"), do: %{ robot | direction: :west }
+  defp move_robot( robot = %{ direction: :south, position: {x,y} }, "A"), do: %{ robot | position: {x,y - 1} }
+  defp move_robot( robot = %{ direction: :west }, "L"), do: %{ robot | direction: :south }
+  defp move_robot( robot = %{ direction: :west }, "R"), do: %{ robot | direction: :north }
+  defp move_robot( robot = %{ direction: :west,  position: {x,y} }, "A"), do: %{ robot | position: {x - 1,y} }
 
   @doc """
   Return the robot's direction.
@@ -69,15 +71,11 @@ defmodule RobotSimulator do
   Valid directions are: `:north`, `:east`, `:south`, `:west`
   """
   @spec direction(robot :: any) :: atom
-  def direction(robot) do
-    robot.direction
-  end
+  def direction(%{direction: dir}), do: dir
 
   @doc """
   Return the robot's position.
   """
   @spec position(robot :: any) :: {integer, integer}
-  def position(robot) do
-    robot.position
-  end
+  def position(%{position: pos}), do: pos
 end
