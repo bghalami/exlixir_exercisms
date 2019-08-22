@@ -1,41 +1,26 @@
 defmodule RobotSimulator do
   defguard is_position(x,y) when is_integer(x) and is_integer(y)
+  defguard is_direction(direction) when direction == :north or direction == :south or direction == :west or direction == :east
 
 
   @doc """
   Create a Robot Simulator given an initial direction and position.
-
   Valid directions are: `:north`, `:east`, `:south`, `:west`
   """
   @spec create(direction :: atom, position :: {integer, integer}) :: any
-  def create(direction \\ :north, position \\ {0,0}) do
-    cond do
-      direction_valid?(direction) && position_valid?(position)  ->
-        %{direction: direction, position: position}
-      direction_valid?(direction) ->
-        {:error, "invalid position"}
-      position_valid?(position) ->
-        {:error, "invalid direction"}
-    end
+  def create(direction \\ :north, position \\ {0,0})
+  def create(direction, position = {x,y}) when is_direction(direction) and is_position(x,y) do
+    %{direction: direction, position: position}
   end
-
-  defp direction_valid?(:north),  do: true
-  defp direction_valid?(:south),  do: true
-  defp direction_valid?(:east),   do: true
-  defp direction_valid?(:west),   do: true
-  defp direction_valid?(_invalid), do: false
-
-  defp position_valid?({x,y}) when is_position(x,y), do: true
-  defp position_valid?(_position), do: false
-
+  def create(_direction, {x,y}) when is_position(x,y), do: {:error, "invalid direction"}
+  def create(direction, _position) when is_direction(direction), do: {:error, "invalid position"}
 
   @doc """
   Simulate the robot's movement given a string of instructions.
-
   Valid instructions are: "R" (turn right), "L", (turn left), and "A" (advance)
   """
   @spec simulate(robot :: any, instructions :: String.t()) :: any
-  def simulate(robot, instructions) when instructions == "", do: robot
+  def simulate(robot, ""), do: robot
   def simulate(robot, instructions) do
     if valid_instructions?(instructions) do
       robot
